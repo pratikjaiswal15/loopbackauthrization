@@ -58,8 +58,11 @@ export class CustomUserService implements UserService<User, Credentials> {
       name: user.name,
       id: user.id,
       email: user.email,
-      role: user.role
+      role: user.role,
+      address: user.address
     }
+
+    //    console.log(profile)
     return profile
 
 

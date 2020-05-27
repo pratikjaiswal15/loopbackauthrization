@@ -1,19 +1,19 @@
 // ---------- ADD IMPORTS -------------
 import {AuthenticationComponent} from '@loopback/authentication';
 import {JWTAuthenticationComponent, SECURITY_SCHEME_SPEC, UserServiceBindings} from '@loopback/authentication-jwt';
-import {AuthorizationComponent, AuthorizationDecision, AuthorizationOptions, AuthorizationTags} from '@loopback/authorization';
+import {AuthorizationComponent} from '@loopback/authorization';
 import {BootMixin} from '@loopback/boot';
-import {Application, ApplicationConfig} from '@loopback/core';
+import {ApplicationConfig} from '@loopback/core';
 import {RepositoryMixin} from '@loopback/repository';
-import {RestApplication} from '@loopback/rest';
+import {RestApplication, RouterSpec} from '@loopback/rest';
 import {RestExplorerBindings, RestExplorerComponent} from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MygodDataSource} from './datasources';
 import {UserCredRepository, UserRepository} from './repositories';
 import {MySequence} from './sequence';
-import {MyAuthorizationProvider} from './services/authorizer';
 import {CustomUserService} from './services/custom-user.service';
+const legacyApp = require('./express-app').legacyApp;
 
 
 export {ApplicationConfig};
@@ -49,7 +49,12 @@ export class CustomApplication extends BootMixin(
         nested: true,
       },
     };
+    const openApiSpecForLegacyApp: RouterSpec = {
+      // insert your spec here, your 'paths', 'components', and 'tags' will be used
+      paths: ['payments', 'api']
+    };
 
+    this.mountExpressRouter('/dogs', legacyApp, openApiSpecForLegacyApp);
 
     //...
     // ------ ADD SNIPPET AT THE BOTTOM ---------
@@ -57,6 +62,9 @@ export class CustomApplication extends BootMixin(
     this.addSecuritySpec();
     // Mount authentication system
     this.component(AuthenticationComponent);
+
+    //auth
+    this.component(AuthorizationComponent)
 
     // Mount jwt component
     this.component(JWTAuthenticationComponent);
@@ -76,22 +84,22 @@ export class CustomApplication extends BootMixin(
       this.bind(UserServiceBindings.USER_CREDENTIALS_REPOSITORY).toClass(
         UserCredRepository,
       )
-
-    let app = new Application()
-    const data: AuthorizationOptions = {
-      precedence: AuthorizationDecision.DENY,
-      defaultDecision: AuthorizationDecision.DENY,
-    };
-
-    const binding = app.component(AuthorizationComponent);
-    app.configure(binding.key).to(data);
-
-    app
-      .bind('authorizationProviders.my-authorizer-provider')
-      .toProvider(MyAuthorizationProvider)
-      .tag(AuthorizationTags.AUTHORIZER);
-
-
+    /*
+        let app = new Application()
+        const data: AuthorizationOptions = {
+          precedence: AuthorizationDecision.DENY,
+          defaultDecision: AuthorizationDecision.DENY,
+        };
+    
+        const binding = app.component(AuthorizationComponent);
+        app.configure(binding.key).to(data);
+    
+        app
+          .bind('authorizationProviders.my-authorizer-provider')
+          .toProvider(MyAuthorizationProvider)
+          .tag(AuthorizationTags.AUTHORIZER);
+    
+    */
   }
 
 

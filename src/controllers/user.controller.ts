@@ -9,6 +9,7 @@ import {genSalt, hash} from 'bcryptjs';
 import _ from 'lodash';
 import {User} from '../models';
 import {UserRepository} from '../repositories';
+import {basicAuthorization} from '../services/try';
 import {validateCredentials} from '../services/validator';
 import {CredentialsRequestBody, UserProfileSchema} from './specs/user-controller.specs';
 
@@ -101,7 +102,7 @@ export class UserController {
   })
 
   @authenticate('jwt')
-  @authorize({allowedRoles: ['admin']})
+  @authorize({allowedRoles: ['admin'], voters: [basicAuthorization]})
 
   async count(
     @param.where(User) where?: Where<User>,
@@ -110,7 +111,7 @@ export class UserController {
   }
 
   @authenticate('jwt')
-  @authorize({allowedRoles: ['admin']})
+  @authorize({allowedRoles: ['admin'], voters: [basicAuthorization]})
 
   @get('/users', {
     responses: {
