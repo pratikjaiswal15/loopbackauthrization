@@ -1,8 +1,9 @@
 // ---------- ADD IMPORTS -------------
 import {AuthenticationComponent} from '@loopback/authentication';
 import {JWTAuthenticationComponent, SECURITY_SCHEME_SPEC, UserServiceBindings} from '@loopback/authentication-jwt';
+import {AuthorizationComponent, AuthorizationDecision, AuthorizationOptions, AuthorizationTags} from '@loopback/authorization';
 import {BootMixin} from '@loopback/boot';
-import {ApplicationConfig} from '@loopback/core';
+import {Application, ApplicationConfig} from '@loopback/core';
 import {RepositoryMixin} from '@loopback/repository';
 import {RestApplication} from '@loopback/rest';
 import {RestExplorerBindings, RestExplorerComponent} from '@loopback/rest-explorer';
@@ -11,6 +12,7 @@ import path from 'path';
 import {MygodDataSource} from './datasources';
 import {UserCredRepository, UserRepository} from './repositories';
 import {MySequence} from './sequence';
+import {MyAuthorizationProvider} from './services/authorizer';
 import {CustomUserService} from './services/custom-user.service';
 
 
@@ -19,6 +21,7 @@ export {ApplicationConfig};
 export class CustomApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
+
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
@@ -54,8 +57,10 @@ export class CustomApplication extends BootMixin(
     this.addSecuritySpec();
     // Mount authentication system
     this.component(AuthenticationComponent);
+
     // Mount jwt component
     this.component(JWTAuthenticationComponent);
+
     // Bind datasource
     this.dataSource(MygodDataSource, UserServiceBindings.DATASOURCE_NAME);
     // ------------- END OF SNIPPET -------------
@@ -71,6 +76,22 @@ export class CustomApplication extends BootMixin(
       this.bind(UserServiceBindings.USER_CREDENTIALS_REPOSITORY).toClass(
         UserCredRepository,
       )
+
+    let app = new Application()
+    const data: AuthorizationOptions = {
+      precedence: AuthorizationDecision.DENY,
+      defaultDecision: AuthorizationDecision.DENY,
+    };
+
+    const binding = app.component(AuthorizationComponent);
+    app.configure(binding.key).to(data);
+
+    app
+      .bind('authorizationProviders.my-authorizer-provider')
+      .toProvider(MyAuthorizationProvider)
+      .tag(AuthorizationTags.AUTHORIZER);
+
+
   }
 
 

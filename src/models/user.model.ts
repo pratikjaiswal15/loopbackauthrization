@@ -8,7 +8,7 @@ export class User extends Entity {
     id: true,
     generated: true,
   })
-  id?: number;
+  id: number;
 
   @property({
     type: 'string',
@@ -19,6 +19,9 @@ export class User extends Entity {
   @property({
     type: 'string',
     required: true,
+    index: {
+      unique: true
+    }
   })
   email: string;
 
@@ -27,8 +30,14 @@ export class User extends Entity {
   })
   address?: string;
 
-  @hasOne(() => UserCred, {keyTo: 'user_id'})
-  userCred: UserCred;
+  @property({
+    type: 'string',
+    //   id: true,
+  })
+  role: string;
+
+  @hasOne(() => UserCred)
+  userCredentials: UserCred;
   // Define well-known properties here
 
   // Indexer property to allow additional data

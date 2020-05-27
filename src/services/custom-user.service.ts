@@ -58,8 +58,7 @@ export class CustomUserService implements UserService<User, Credentials> {
       name: user.name,
       id: user.id,
       email: user.email,
-      address: address,
-
+      role: user.role
     }
     return profile
 

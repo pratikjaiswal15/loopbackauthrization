@@ -1,14 +1,17 @@
-import {TokenService, UserService} from '@loopback/authentication';
-import {Credentials, TokenServiceBindings, UserServiceBindings} from '@loopback/authentication-jwt';
+import {authenticate, TokenService, UserService} from '@loopback/authentication';
+import {Credentials, OPERATION_SECURITY_SPEC, TokenServiceBindings, UserServiceBindings} from '@loopback/authentication-jwt';
+import {authorize} from '@loopback/authorization';
 import {inject} from '@loopback/core';
 import {Count, CountSchema, Filter, FilterExcludingWhere, model, property, repository, Where} from '@loopback/repository';
-import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
-import {SecurityBindings, UserProfile} from '@loopback/security';
+import {del, get, getModelSchemaRef, HttpErrors, param, patch, post, put, requestBody} from '@loopback/rest';
+import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {genSalt, hash} from 'bcryptjs';
 import _ from 'lodash';
 import {User} from '../models';
 import {UserRepository} from '../repositories';
-import {CredentialsRequestBody} from './specs/user-controller.specs';
+import {validateCredentials} from '../services/validator';
+import {CredentialsRequestBody, UserProfileSchema} from './specs/user-controller.specs';
+
 
 @model()
 export class NewUserRequest extends User {
@@ -59,14 +62,30 @@ export class UserController {
     //user: Omit<User, 'id'>,
   ): Promise<User> {
 
+    validateCredentials(_.pick(newUserRequest, ['email', 'password']));
+
     const password = await hash(newUserRequest.password, await genSalt());
-    const savedUser = await this.userRepository.create(
-      _.omit(newUserRequest, 'password'),
-    );
+
+    try {
+      const savedUser = await this.userRepository.create(
+        _.omit(newUserRequest, 'password'),
+      );
+
+      await this.userRepository.userCredentials(savedUser.id).create({password});
+      return savedUser;
+
+    } catch (error) {
+
+      // MongoError 11000 duplicate key
+      if (error.code === 11000 && error.errmsg.includes('index: uniqueEmail')) {
+        throw new HttpErrors.Conflict('Email value is already taken');
+      } else {
+        throw error;
+      }
+    }
 
 
-    await this.userRepository.userCred(savedUser.id).create({password});
-    return savedUser;
+
 
 
   }
@@ -80,11 +99,18 @@ export class UserController {
       },
     },
   })
+
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['admin']})
+
   async count(
     @param.where(User) where?: Where<User>,
   ): Promise<Count> {
     return this.userRepository.count(where);
   }
+
+  @authenticate('jwt')
+  @authorize({allowedRoles: ['admin']})
 
   @get('/users', {
     responses: {
@@ -227,4 +253,32 @@ export class UserController {
 
     return {token};
   }
+
+
+  @get('/users/me', {
+    security: OPERATION_SECURITY_SPEC,
+    responses: {
+      '200': {
+        description: 'The current user profile',
+        content: {
+          'application/json': {
+            schema: UserProfileSchema,
+          },
+        },
+      },
+    },
+  })
+  @authenticate('jwt')
+  async printCurrentUser(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+  ): Promise<User> {
+    // (@jannyHou)FIXME: explore a way to generate OpenAPI schema
+    // for symbol property
+
+    const userId = currentUserProfile[securityId];
+    return this.userRepository.findById(+userId);
+  }
+
+
 }

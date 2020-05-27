@@ -42,7 +42,7 @@ export class UserUserCredController {
     @param.path.number('id') id: number,
     @param.query.object('filter') filter?: Filter<UserCred>,
   ): Promise<UserCred> {
-    return this.userRepository.userCred(id).get(filter);
+    return this.userRepository.userCredentials(id).get(filter);
   }
 
   @post('/users/{id}/user-cred', {
@@ -61,13 +61,13 @@ export class UserUserCredController {
           schema: getModelSchemaRef(UserCred, {
             title: 'NewUserCredInUser',
             exclude: ['id'],
-            optional: ['user_id']
+            optional: ['userId']
           }),
         },
       },
     }) userCred: Omit<UserCred, 'id'>,
   ): Promise<UserCred> {
-    return this.userRepository.userCred(id).create(userCred);
+    return this.userRepository.userCredentials(id).create(userCred);
   }
 
   @patch('/users/{id}/user-cred', {
@@ -90,7 +90,7 @@ export class UserUserCredController {
     userCred: Partial<UserCred>,
     @param.query.object('where', getWhereSchemaFor(UserCred)) where?: Where<UserCred>,
   ): Promise<Count> {
-    return this.userRepository.userCred(id).patch(userCred, where);
+    return this.userRepository.userCredentials(id).patch(userCred, where);
   }
 
   @del('/users/{id}/user-cred', {
@@ -105,6 +105,6 @@ export class UserUserCredController {
     @param.path.number('id') id: number,
     @param.query.object('where', getWhereSchemaFor(UserCred)) where?: Where<UserCred>,
   ): Promise<Count> {
-    return this.userRepository.userCred(id).delete(where);
+    return this.userRepository.userCredentials(id).delete(where);
   }
 }

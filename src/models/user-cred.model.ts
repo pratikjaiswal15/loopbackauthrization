@@ -7,7 +7,7 @@ export class UserCred extends Entity {
     id: true,
     generated: true,
   })
-  id?: number;
+  id: number;
 
   @property({
     type: 'string',
@@ -18,7 +18,7 @@ export class UserCred extends Entity {
   @property({
     type: 'number',
   })
-  user_id?: number;
+  userId: number;
   // Define well-known properties here
 
   // Indexer property to allow additional data
