@@ -18,7 +18,7 @@ export async function basicAuthorization(
     const user = _.pick(authorizationCtx.principals[0], [
       'id',
       'name',
-      'role',
+      'role', // propety role
     ]);
     currentUser = {[securityId]: user.id, name: user.name, roles: user.role};
   } else {
