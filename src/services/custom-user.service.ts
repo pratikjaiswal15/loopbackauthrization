@@ -62,7 +62,7 @@ export class CustomUserService implements UserService<User, Credentials> {
       address: user.address
     }
 
-    //    console.log(profile)
+    console.log(profile)
     return profile
 
 

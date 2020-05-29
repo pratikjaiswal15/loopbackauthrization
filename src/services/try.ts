@@ -1,4 +1,4 @@
-import {AuthorizationContext, AuthorizationDecision, AuthorizationMetadata} from '@loopback/authorization';
+/*import {AuthorizationContext, AuthorizationDecision, AuthorizationMetadata} from '@loopback/authorization';
 import {securityId, UserProfile} from '@loopback/security';
 import _ from 'lodash';
 
@@ -7,22 +7,20 @@ import _ from 'lodash';
 export async function basicAuthorization(
   authorizationCtx: AuthorizationContext,
   metadata: AuthorizationMetadata,
+
 ): Promise<AuthorizationDecision> {
+
+  console.log(authorizationCtx.principals[0])
+  console.log(authorizationCtx.roles)
   // No access if authorization details are missing
   let currentUser: UserProfile;
   if (authorizationCtx.principals.length > 0) {
-    const user = _.pick(authorizationCtx.principals[0]
-      , [
-        'id',
-        'name',
-        'role',
-        'email',
-        'address'
-      ]);
-
-    console.log(user)
-    currentUser = {[securityId]: user.id, name: user.name, roles: user.role, email: user.email, address: user.address};
-    console.log(currentUser)
+    const user = _.pick(authorizationCtx.principals[0], [
+      'id',
+      'name',
+      'roles',
+    ]);
+    currentUser = {[securityId]: user.id, name: user.name, roles: user.roles};
   } else {
     return AuthorizationDecision.DENY;
   }
@@ -60,10 +58,11 @@ export async function basicAuthorization(
    * Allow access only to model owners, using route as source of truth
    *
    * eg. @post('/users/{userId}/orders', ...) returns `userId` as args[0]
-   */
+   *
   if (currentUser[securityId] === authorizationCtx.invocationContext.args[0]) {
     return AuthorizationDecision.ALLOW;
   }
 
   return AuthorizationDecision.DENY;
 }
+*/

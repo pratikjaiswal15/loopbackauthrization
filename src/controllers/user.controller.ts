@@ -9,7 +9,7 @@ import {genSalt, hash} from 'bcryptjs';
 import _ from 'lodash';
 import {User} from '../models';
 import {UserRepository} from '../repositories';
-import {basicAuthorization} from '../services/try';
+import {basicAuthorization} from '../services/authorizer';
 import {validateCredentials} from '../services/validator';
 import {CredentialsRequestBody, UserProfileSchema} from './specs/user-controller.specs';
 
@@ -103,6 +103,7 @@ export class UserController {
 
   @authenticate('jwt')
   @authorize({allowedRoles: ['admin'], voters: [basicAuthorization]})
+  //@authorize({allowedRoles: ['admin']})
 
   async count(
     @param.where(User) where?: Where<User>,
@@ -110,8 +111,6 @@ export class UserController {
     return this.userRepository.count(where);
   }
 
-  @authenticate('jwt')
-  @authorize({allowedRoles: ['admin'], voters: [basicAuthorization]})
 
   @get('/users', {
     responses: {
@@ -248,6 +247,7 @@ export class UserController {
 
     // convert a User object into a UserProfile object (reduced set of properties)
     const userProfile = this.userService.convertToUserProfile(user);
+    //console.log(userProfile)
 
     // create a JSON Web Token based on the user profile
     const token = await this.jwtService.generateToken(userProfile);

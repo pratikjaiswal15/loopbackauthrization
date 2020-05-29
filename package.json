@@ -44,29 +44,30 @@
     "!*/__tests__"
   ],
   "dependencies": {
-    "@loopback/authentication": "^4.2.5",
-    "@loopback/authentication-jwt": "^0.3.1",
-    "@loopback/authorization": "^0.5.10",
-    "@loopback/boot": "^2.3.1",
-    "@loopback/context": "^3.8.1",
-    "@loopback/core": "^2.7.0",
-    "@loopback/openapi-v3": "^3.4.1",
-    "@loopback/repository": "^2.5.1",
-    "@loopback/rest": "^5.0.1",
-    "@loopback/rest-explorer": "^2.2.2",
-    "@loopback/service-proxy": "^2.3.0",
+    "@loopback/authentication": "^4.2.6",
+    "@loopback/authentication-jwt": "^0.4.0",
+    "@loopback/authorization": "^0.5.11",
+    "@loopback/boot": "^2.3.2",
+    "@loopback/context": "^3.8.2",
+    "@loopback/core": "^2.7.1",
+    "@loopback/openapi-v3": "^3.4.2",
+    "@loopback/repository": "^2.6.0",
+    "@loopback/rest": "^5.1.0",
+    "@loopback/rest-explorer": "^2.2.3",
+    "@loopback/service-proxy": "^2.3.1",
     "express": "^4.17.1",
     "isemail": "^3.2.0",
     "loopback-connector-mysql": "^5.4.3",
-    "tslib": "^1.10.0"
+    "razorpay": "^2.0.6",
+    "tslib": "^2.0.0"
   },
   "devDependencies": {
-    "@loopback/build": "^5.4.1",
+    "@loopback/build": "^5.4.2",
     "source-map-support": "^0.5.19",
-    "@loopback/testlab": "^3.1.5",
+    "@loopback/testlab": "^3.1.6",
     "@types/node": "^10.17.24",
-    "@loopback/eslint-config": "^7.0.1",
-    "eslint": "^7.0.0",
+    "@loopback/eslint-config": "^8.0.0",
+    "eslint": "^7.1.0",
     "typescript": "~3.9.3"
   }
 }

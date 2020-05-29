@@ -91,15 +91,15 @@ export class CustomApplication extends BootMixin(
           defaultDecision: AuthorizationDecision.DENY,
         };
     
-        const binding = app.component(AuthorizationComponent);
+        const binding = this.component(AuthorizationComponent);
         app.configure(binding.key).to(data);
     
         app
           .bind('authorizationProviders.my-authorizer-provider')
           .toProvider(MyAuthorizationProvider)
           .tag(AuthorizationTags.AUTHORIZER);
-    
     */
+
   }
 
 
