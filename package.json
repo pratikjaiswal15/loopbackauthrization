@@ -55,7 +55,7 @@
     "@loopback/rest": "^5.1.0",
     "@loopback/rest-explorer": "^2.2.3",
     "@loopback/service-proxy": "^2.3.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "isemail": "^3.2.0",
     "loopback-connector-mysql": "^5.4.3",
     "razorpay": "^2.0.6",
